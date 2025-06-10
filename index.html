@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конфетти дождь</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #121212;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+        
+        .container {
+            text-align: center;
+            z-index: 100;
+            color: white;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+        
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 71, 87, 0.6);
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            top: -10px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Дождь конфетти</h1>
+        <button id="startBtn">Запустить конфетти</button>
+    </div>
+
+    <script>
+        const colors = [
+            '#ff4757', '#ff6b81', '#ff6348', '#ffa502',
+            '#eccc68', '#7bed9f', '#2ed573', '#1e90ff',
+            '#3742fa', '#a4b0be', '#ff00ff', '#00ffff'
+        ];
+        
+        const shapes = ['circle', 'square', 'rectangle', 'triangle'];
+        
+        document.getElementById('startBtn').addEventListener('click', function() {
+            startConfettiRain();
+        });
+        
+        function startConfettiRain() {
+            // Очищаем предыдущие конфетти
+            document.querySelectorAll('.confetti').forEach(el => el.remove());
+            
+            // Создаем новые конфетти
+            for (let i = 0; i < 150; i++) {
+                setTimeout(() => {
+                    createConfetti();
+                }, i * 50);
+            }
+        }
+        
+        function createConfetti() {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            
+            // Случайные свойства
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const size = 5 + Math.random() * 10;
+            const shape = shapes[Math.floor(Math.random() * shapes.length)];
+            
+            // Позиция
+            const startX = Math.random() * window.innerWidth;
+            
+            // Применяем свойства
+            confetti.style.left = `${startX}px`;
+            confetti.style.backgroundColor = color;
+            
+            // Форма
+            switch(shape) {
+                case 'circle':
+                    confetti.style.borderRadius = '50%';
+                    confetti.style.width = `${size}px`;
+                    confetti.style.height = `${size}px`;
+                    break;
+                case 'square':
+                    confetti.style.width = `${size}px`;
+                    confetti.style.height = `${size}px`;
+                    break;
+                case 'rectangle':
+                    confetti.style.width = `${size}px`;
+                    confetti.style.height = `${size/2}px`;
+                    break;
+                case 'triangle':
+                    confetti.style.width = '0';
+                    confetti.style.height = '0';
+                    confetti.style.borderLeft = `${size/2}px solid transparent`;
+                    confetti.style.borderRight = `${size/2}px solid transparent`;
+                    confetti.style.borderBottom = `${size}px solid ${color}`;
+                    confetti.style.backgroundColor = 'transparent';
+                    break;
+            }
+            
+            document.body.appendChild(confetti);
+            
+            // Анимация падения
+            let positionY = -10;
+            let rotation = 0;
+            const rotationSpeed = (Math.random() - 0.5) * 20;
+            const fallSpeed = 2 + Math.random() * 3;
+            const swayAmount = Math.random() * 2;
+            
+            function animate() {
+                positionY += fallSpeed;
+                rotation += rotationSpeed;
+                
+                // Легкое покачивание из стороны в сторону
+                const swayX = Math.sin(positionY * 0.05) * swayAmount;
+                
+                confetti.style.transform = `translate(${swayX}px, ${positionY}px) rotate(${rotation}deg)`;
+                
+                if (positionY < window.innerHeight) {
+                    requestAnimationFrame(animate);
+                } else {
+                    confetti.remove();
+                }
+            }
+            
+            requestAnimationFrame(animate);
+        }
+    </script>
+</body>
+</html>
